@@ -22,7 +22,6 @@ image = fits.open('Ty111221.0145.fits')
 #Retrieve data from file:
 Data = image[0].data
 
-
 #Compute background sky level through random median sampling:
 #Inputs: data array, nxn size of random subarray to use for sampling,and number of desired sampling iterations
 back = background(Data,5,100)
