@@ -17,11 +17,11 @@ def binsum(array,bins):
         colsum.append(np.sum(array[:,j * bins:j * bins + bins]))
 
     #Plot summed row and column values
-    plt.plot(rowsum)
-    plt.title('Summed Rows')
-    plt.show()
-    plt.plot(colsum)
-    plt.title('Summed Columns')
-    plt.show()
+    # plt.plot(rowsum)
+    # plt.title('Summed Rows')
+    # plt.show()
+    # plt.plot(colsum)
+    # plt.title('Summed Columns')
+    # plt.show()
 
     return rowsum, colsum

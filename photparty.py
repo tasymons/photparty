@@ -8,6 +8,7 @@
 
 #Import math, extraneous functions, and fits file handling:
 import numpy as np
+import os
 from astropy.io import fits
 from background import background
 from binsum import binsum
@@ -18,7 +19,9 @@ from starphot import starphot
 
 files = [line.rstrip() for line in open('files.txt')]
 for i in files:
-
+    (name, ext) = os.path.splitext(i)
+    newname = name+'mag.txt'
+    f = open(newname,'w')
     #Open image file of choice:
     #image = fits.open('C111221.0077.fits')
     image = fits.open(i)
@@ -29,8 +32,8 @@ for i in files:
     #Compute background sky level through random median sampling:
     #Inputs: data array, nxn size of random subarray to use for sampling, and number of desired sampling iterations
     back = background(Data,5,100)
-    print('Sky background level:')
-    print(back)
+    print('Sky background level:',file = f)
+    print(back,file = f)
 
     #Create desired inset of total data array:
     #Find midpoint of image data
@@ -54,8 +57,8 @@ for i in files:
     #Calculate sky background for specific inset:
     #Inputs: inset data array, nxn size of random subarray used for sampling, number of desired sampling iterations
     insetback = background(inset,5,100)
-    print('Inset background sky level:')
-    print(insetback)
+    print('Inset background sky level:',file = f)
+    print(insetback,file = f)
 
     #Compute summed row and column values for desired array by number of bins:
     #Will also display plots of summed row and column values before program continues
@@ -72,8 +75,8 @@ for i in files:
     starrow, starcol, backsum, std = starlocate(inset,insetback,100,rowsum,colsum)
     print('Summed background value for one row/column:')
     print(backsum)
-    print('Standard deviation of inset:')
-    print(std)
+    print('Standard deviation of inset:',file = f)
+    print(std, file = f)
     print('Indices of detected stars:')
     print(starrow)
     print(starcol)
@@ -92,10 +95,10 @@ for i in files:
     print('Median pixel of each star by row/column:')
     print(rowmed)
     print(colmed)
-    print('Paired indices of star centers:')
-    print(starpoints)
-    print('Total number of stars found:')
-    print(len(starpoints))
+    print('Paired indices of star centers:',file = f)
+    print(starpoints,file = f)
+    print('Total number of stars found:',file = f)
+    print(len(starpoints),file = f)
 
     #Take list of star coordinates and find summed pixel values within a square aperture of desired size:
     #Also find background values for each star and subtract them from star values
@@ -108,8 +111,8 @@ for i in files:
     print(starback)
     print('Background subtracted star values:')
     print(backsub)
-    print('Magnitudes for each star:')
-    print(mags)
+    print('Magnitudes for each star:',file = f)
+    print(mags,file = f)
 
 
 
