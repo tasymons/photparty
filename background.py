@@ -19,7 +19,7 @@ def background(input, length, n):
     #Take many random subarrays of desired size and find the median value
     for i in range(0,n):
         small = subarray(input,length)
-        m = np.median(small)
+        m = np.nanmedian(small)
         skyvals.append(m)
 
     #Median of all sky values is taken as background level
