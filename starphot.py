@@ -1,9 +1,10 @@
 #This function takes a list of star coordinates and finds the sum of the pixel values for each star within a nxn box
 #It also finds the background median for each star using four nxn boxes at the corners of each star's box
-#The background value is subtracted from each star's value, and this is then converted into a magnitude for each star
+#The background value is subtracted from each star's value, converted into flux by dividing by exposure time,
+# and this is then converted into a magnitude for each star
 #By Teresa Symons 2016
 
-def starphot(hw,inset,starpoints):
+def starphot(hw,inset,starpoints, etime):
     #Import math
     import numpy as np
 
@@ -30,7 +31,10 @@ def starphot(hw,inset,starpoints):
     #Subtract the background value from each star
     backsub = [a-b for a, b in zip(boxsum,starback)]
 
-    #Convert to magnitude
-    mags = [-2.5*np.log10(a)+20 for a in backsub]
+    #Convert to flux by dividing by exposure time
+    flux = [x/etime for x in backsub]
 
-    return boxsum, starback, backsub, mags
+    #Convert to magnitude
+    mags = [-2.5*np.log10(a)+20 for a in flux]
+
+    return boxsum, starback, backsub, flux, mags
