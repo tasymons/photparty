@@ -23,4 +23,4 @@ def starlocate(array,background,sigma,summedrows,summedcols):
         if summedcols[k]>sigma*std+np.abs(backsum):
             starcol.append(summedcols.index(summedcols[k]))
 
-    return starrow, starcol, backsum, std
+    return starrow, starcol, backsum, std, sigma

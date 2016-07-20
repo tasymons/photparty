@@ -30,6 +30,14 @@ for i in files:
     #Retrieve data and exposure time from file:
     Data = image[0].data
     etime = image[0].header['EXPTIME']
+    print('Exposure time:',file = f)
+    print(etime, file = f)
+    filter = image[0].header['FILTER1']
+    print('Filter:',file = f)
+    print(filter, file = f)
+    airmass = image[0].header['AIRMASS']
+    print('Airmass:', file = f)
+    print(airmass, file = f)
 
     #Compute background sky level through random median sampling:
     #Inputs: data array, nxn size of random subarray to use for sampling, and number of desired sampling iterations
@@ -55,6 +63,8 @@ for i in files:
     #Custom removal for specific chip inset
     #inset[0:1000,995]=-1
     #inset[983:1000,313:315] = -1
+    inset[:,1102] = 0
+    inset[:,2047] = 0
 
     #Blanket removal of bad pixels
     inset[inset>45000] = 0
@@ -78,11 +88,13 @@ for i in files:
 
     #Locate values in summed row and column vectors that are greater than desired sigma level above background:
     #Inputs: Data array, background level variable, desired sigma detection level, summed row vector, summed column vector
-    starrow, starcol, backsum, std = starlocate(inset,insetback,100,rowsum,colsum)
+    starrow, starcol, backsum, std, sigma = starlocate(inset,insetback,5,rowsum,colsum)
     print('Summed background value for one row/column:', file = f)
     print(backsum, file = f)
     print('Standard deviation of inset:',file = f)
     print(std, file = f)
+    print('Detection level in sigma:', file = f)
+    print(sigma, file = f)
     #print('Indices of detected stars:', file = f)
     #print(starrow, file = f)
     #print(starcol, file = f)
@@ -110,7 +122,9 @@ for i in files:
     #Also find background values for each star and subtract them from star values
     #Convert background-subtracted star values into fluxes and then magnitudes
     #Inputs: half-width of nxn square aperture, inset data array, vector containing star coordinates, exposure time
-    boxsum, starback, backsub, flux, mags = starphot(25, inset, starpoints, etime)
+    boxsum, starback, backsub, flux, mags, hw = starphot(25, inset, starpoints, etime)
+    print('Width/Height of boxes:', file = f)
+    print(hw*2, file = f)
     print('Pixel sums for boxes around each star:', file = f)
     print(boxsum, file = f)
     print('Background values for each star:', file = f)
@@ -123,12 +137,12 @@ for i in files:
     print(mags,file = f)
 
     # Plot summed row and column values
-    plt.plot(rowsum)
-    plt.title('Summed Rows')
-    plt.show()
-    plt.plot(colsum)
-    plt.title('Summed Columns')
-    plt.show()
+    # plt.plot(rowsum)
+    # plt.title('Summed Rows')
+    # plt.show()
+    # plt.plot(colsum)
+    # plt.title('Summed Columns')
+    # plt.show()
 
 
 
