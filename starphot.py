@@ -37,4 +37,4 @@ def starphot(hw,inset,starpoints, etime):
     #Convert to magnitude
     mags = [-2.5*np.log10(a)+20 for a in flux]
 
-    return boxsum, starback, backsub, flux, mags, hw
+    return boxsum, starback, backsub,flux, mags, hw

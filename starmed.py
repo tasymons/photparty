@@ -2,7 +2,7 @@
 #It also returns the number of stars by row and by column, the median pixel values for each star, and paired coordinates for each star
 #By Teresa Symons 2016
 
-def starmed(starrow,starcol,inset):
+def starmed(starrow,starcol,inset,mid):
     #Import math
     import numpy as np
 
@@ -41,9 +41,16 @@ def starmed(starrow,starcol,inset):
     rowmed = []
     colmed = []
     for k in range(0,len(rowloc)):
-        rowmed.append(int(round(np.median(rowloc[k]))))
+        if len(rowloc[k]) == 1:
+            rowmed.append(rowloc[k][0])
+        else:
+            rowmed.append(int(round(np.median(rowloc[k]))))
     for k in range(0,len(colloc)):
-        colmed.append(int(round(np.median(colloc[k]))))
+        if len(colloc[k]) == 1:
+            colmed.append(colloc[k][0])
+        else:
+            colmed.append(int(round(np.median(colloc[k]))))
+
 
     #Check original data array for maximum column value associated with each star's row coordinate
     #If column value appears in list of column coordinates, add coordinate pair to list of star coordinates
@@ -55,5 +62,17 @@ def starmed(starrow,starcol,inset):
             pt.append(i)
             pt.append(j)
             starpoints.append(pt)
+        elif j+1 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j-1 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
 
-    return rowloc, colloc, numstarr, numstarc, rowmed, colmed, starpoints
+    adjstarpoints = [[y+round(mid/2)+1,x+round(mid/2)+1] for [x,y] in starpoints]
+
+    return rowloc, colloc, numstarr, numstarc, rowmed, colmed, starpoints, adjstarpoints

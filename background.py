@@ -10,8 +10,8 @@ def background(input, length, n):
     def subarray(inputarray, slength):
         a = randint(0,len(inputarray))
         b = randint(0,len(inputarray))
-        suba = inputarray[a:a+slength, b:b+slength]
-        return suba
+        array = inputarray[a:a+slength, b:b+slength]
+        return array
 
     #Determine background sky level
     skyvals = []
