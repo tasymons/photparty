@@ -15,16 +15,19 @@ from binsum import binsum
 from starlocate import starlocate
 from starmed import starmed
 from starphot import starphot
+from astropy.table import Table
 import matplotlib.pylab as plt
 
 
 #files = [line.rstrip() for line in open('files.txt')]
-path = '/Users/Andromeda/PycharmProjects/untitled/files'
+path = '/Users/Andromeda/PycharmProjects/untitled/singlestars_17dec15'
 files = [f for f in os.listdir(path) if any([f.endswith('fit'), f.endswith('fits')]) if not f.startswith('.')]
 for i in files:
     (name, ext) = os.path.splitext(i)
     newname = path+'/'+name+'mag.txt'
+    datname = path+'/'+name+'dat.txt'
     f = open(newname,'w')
+    df = open(datname,'w')
     #Open image file of choice:
     #image = fits.open('C111221.0077.fits')
     filepath = path+'/'+i
@@ -101,8 +104,7 @@ for i in files:
     print('Indices of detected stars:', file = f)
     print(starrow, file = f)
     print(starcol, file = f)
-    print(len(starrow))
-    print(len(starcol))
+
 
     #Take indices of detected star pixels and divide into sublists by individual star:
     #Return sublists of star indices, number of stars, and median pixel of each star
@@ -143,6 +145,13 @@ for i in files:
     print('Magnitudes for each star:',file = f)
     print(mags,file = f)
 
+    n = len(mags)
+    tname = [i]*n
+    tfilter = [filter]*n
+    tairmass = [airmass]*n
+    tetime = [etime]*n
+    t = Table([tname, tfilter, tairmass, tetime, adjstarpoints, mags], names=('File Name','Filter','Airmass','Exposure Time','Coordinates', 'Magnitude'))
+    print(t,file = df )
     #Plot summed row and column values
     # plt.plot(rowsum)
     # plt.title('Summed Rows')
