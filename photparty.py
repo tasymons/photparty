@@ -20,7 +20,7 @@ import matplotlib.pylab as plt
 
 
 #files = [line.rstrip() for line in open('files.txt')]
-path = '/Users/Andromeda/PycharmProjects/untitled/singlestars_17dec15'
+path = '/Users/Andromeda/PycharmProjects/untitled/files'
 files = [f for f in os.listdir(path) if any([f.endswith('fit'), f.endswith('fits')]) if not f.startswith('.')]
 for i in files:
     (name, ext) = os.path.splitext(i)
@@ -74,7 +74,8 @@ for i in files:
 
     #Blanket removal of bad pixels
     inset[inset>45000] = 0
-    inset[inset<-100] = 0
+    std = np.std(inset)
+    inset[inset<-3*std] = 0
 
     #Calculate sky background for specific inset:
     #Inputs: inset data array, nxn size of random subarray used for sampling, number of desired sampling iterations
@@ -150,15 +151,17 @@ for i in files:
     tfilter = [filter]*n
     tairmass = [airmass]*n
     tetime = [etime]*n
-    t = Table([tname, tfilter, tairmass, tetime, adjstarpoints, mags], names=('File Name','Filter','Airmass','Exposure Time','Coordinates', 'Magnitude'))
+    x = [x for [x,y] in adjstarpoints]
+    y = [y for [x,y] in adjstarpoints]
+    t = Table([tname, tfilter, tairmass, tetime, x, y, mags], names=('File Name','Filter','Airmass','Exposure Time','X', 'Y', 'Magnitude'))
     print(t,file = df )
     #Plot summed row and column values
-    # plt.plot(rowsum)
-    # plt.title('Summed Rows')
-    # plt.show()
-    # plt.plot(colsum)
-    # plt.title('Summed Columns')
-    # plt.show()
+    plt.plot(rowsum)
+    plt.title('Summed Rows')
+    plt.show()
+    plt.plot(colsum)
+    plt.title('Summed Columns')
+    plt.show()
 
 
 

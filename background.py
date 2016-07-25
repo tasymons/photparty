@@ -4,6 +4,7 @@
 #Import math
 import numpy as np
 from random import randint
+from fixindex import fixindex
 def background(input, length, n):
 
     #subarray function returns random subarray of desired nxn size
@@ -11,6 +12,9 @@ def background(input, length, n):
         a = randint(0,len(inputarray))
         b = randint(0,len(inputarray))
         array = inputarray[a:a+slength, b:b+slength]
+        if array.size == 0:
+            a, b, c, d = fixindex(len(inputarray), a, a+slength, b, b+slength)
+            array = inputarray[a:b,c:d]
         return array
 
     #Determine background sky level

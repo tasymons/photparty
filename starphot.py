@@ -7,18 +7,44 @@
 def starphot(hw,inset,starpoints, etime):
     #Import math
     import numpy as np
+    from fixindex import fixindex
 
     boxsum = []
     starback = []
     for i in starpoints:
         medsum = []
         #For each star, define a square box around it with the desired half-width
+
         box = inset[i[0]-hw:i[0]+hw,i[1]-hw:i[1]+hw]
+
+        if box.size == 0:
+            a, b, c, d = fixindex(len(inset), i[0]-hw,i[0]+hw,i[1]-hw,i[1]+hw)
+            box = inset[a:b,c:d]
+
+
         #Define four boxes of the same size at each corner of the star box
-        medboxul = np.nanmedian(inset[i[0]-3*hw:i[0]-hw,i[1]-3*hw:i[1]-hw])
-        medboxur = np.nanmedian(inset[i[0] -3*hw:i[0] -hw, i[1] +hw:i[1] +3*hw])
-        medboxll = np.nanmedian(inset[i[0] +hw:i[0] +3*hw, i[1] - 3 * hw:i[1] - hw])
-        medboxlr = np.nanmedian(inset[i[0] +hw:i[0] +3*hw, i[1] +hw:i[1] +3* hw])
+
+        ul = inset[i[0]-3*hw:i[0]-hw,i[1]-3*hw:i[1]-hw]
+        if ul.size == 0:
+            a, b, c, d = fixindex(len(inset), i[0]-3*hw, i[0]-hw, i[1]-3*hw, i[1]-hw)
+            ul = inset[a:b, c:d]
+        ur = inset[i[0] -3*hw:i[0] -hw, i[1] +hw:i[1] +3*hw]
+        if ur.size == 0:
+            a, b, c, d = fixindex(len(inset), i[0] -3*hw, i[0] -hw, i[1] +hw, i[1] +3*hw)
+            ur = inset[a:b, c:d]
+        ll = inset[i[0] +hw:i[0] +3*hw, i[1] - 3 * hw:i[1] - hw]
+        if ll.size == 0:
+            a, b, c, d = fixindex(len(inset), i[0] +hw, i[0] +3*hw, i[1] - 3 * hw, i[1] - hw)
+            ll = inset[a:b, c:d]
+        lr = inset[i[0] +hw:i[0] +3*hw, i[1] +hw:i[1] +3* hw]
+        if lr.size == 0:
+            a, b, c, d = fixindex(len(inset), i[0] +hw, i[0] +3*hw, i[1] +hw, i[1] +3* hw)
+            lr = inset[a:b, c:d]
+
+        medboxul = np.nanmedian(ul)
+        medboxur = np.nanmedian(ur)
+        medboxll = np.nanmedian(ll)
+        medboxlr = np.nanmedian(lr)
         #Sum up the values in the star box and take the median of the background boxes
         medsum.append(medboxul)
         medsum.append(medboxur)
