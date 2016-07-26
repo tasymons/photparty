@@ -5,7 +5,7 @@
 #By Teresa Symons 2016
 
 def starphot(hw,inset,starpoints, etime):
-    #Import math
+    #Import math and array index adjustment
     import numpy as np
     from fixindex import fixindex
 
@@ -14,16 +14,16 @@ def starphot(hw,inset,starpoints, etime):
     for i in starpoints:
         medsum = []
         #For each star, define a square box around it with the desired half-width
-
         box = inset[i[0]-hw:i[0]+hw,i[1]-hw:i[1]+hw]
-
+        #If part of box extends outside of inset range, adjust size of box
         if box.size == 0:
+            # This function takes the proposed edges of a subarray and checks if they fall outside the range of the original array
+            # If they do, edges are moved to the edge of the original array
+            # Inputs: length of original array (assumed to be square), first row, last row, first column, last column of subarray
             a, b, c, d = fixindex(len(inset), i[0]-hw,i[0]+hw,i[1]-hw,i[1]+hw)
             box = inset[a:b,c:d]
 
-
-        #Define four boxes of the same size at each corner of the star box
-
+        #Define four boxes of the same size at each corner of the star box, making similar adjustments where necessary
         ul = inset[i[0]-3*hw:i[0]-hw,i[1]-3*hw:i[1]-hw]
         if ul.size == 0:
             a, b, c, d = fixindex(len(inset), i[0]-3*hw, i[0]-hw, i[1]-3*hw, i[1]-hw)
@@ -41,15 +41,18 @@ def starphot(hw,inset,starpoints, etime):
             a, b, c, d = fixindex(len(inset), i[0] +hw, i[0] +3*hw, i[1] +hw, i[1] +3* hw)
             lr = inset[a:b, c:d]
 
+        #Record medians of values inside boxes
         medboxul = np.nanmedian(ul)
         medboxur = np.nanmedian(ur)
         medboxll = np.nanmedian(ll)
         medboxlr = np.nanmedian(lr)
-        #Sum up the values in the star box and take the median of the background boxes
+
+        #Sum up the values in the star box and take the median of all the background boxes
         medsum.append(medboxul)
         medsum.append(medboxur)
         medsum.append(medboxll)
         medsum.append(medboxlr)
+
         #Declare the background for a given star to be the median of the 4 median boxes
         starback.append(np.nanmedian(medsum))
         boxsum.append(np.sum(box))

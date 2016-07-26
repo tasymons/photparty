@@ -38,22 +38,23 @@ def starmed(starrow,starcol,inset,mid):
     numstarc = len(colloc)
 
     #Find median pixel value of each star by row and column
+    #If a star as only one pixel, include that as median value
     rowmed = []
     colmed = []
     for k in range(0,len(rowloc)):
         if len(rowloc[k]) == 1:
             rowmed.append(rowloc[k][0])
         else:
-            rowmed.append(int(round(np.median(rowloc[k]))))
+            rowmed.append(int(round(np.nanmedian(rowloc[k]))))
     for k in range(0,len(colloc)):
         if len(colloc[k]) == 1:
             colmed.append(colloc[k][0])
         else:
-            colmed.append(int(round(np.median(colloc[k]))))
+            colmed.append(int(round(np.nanmedian(colloc[k]))))
 
 
     #Check original data array for maximum column value associated with each star's row coordinate
-    #If column value appears in list of column coordinates, add coordinate pair to list of star coordinates
+    #If column value appears within +/- one pixel in list of column coordinates, add coordinate pair to list of star coordinates
     starpoints = []
     for i in rowmed:
         j = np.argmax(inset[i, :])
@@ -73,6 +74,7 @@ def starmed(starrow,starcol,inset,mid):
             pt.append(j)
             starpoints.append(pt)
 
+    #Adjust coordinates for original image and python indexing
     adjstarpoints = [[y+round(mid/2)+1,x+round(mid/2)+1] for [x,y] in starpoints]
 
     return rowloc, colloc, numstarr, numstarc, rowmed, colmed, starpoints, adjstarpoints

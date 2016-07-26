@@ -1,4 +1,4 @@
-#The goal of this script is to read a fits file, locate stars, and return magnitudes for those stars
+#The goal of this script is to read fits files, locate stars, and return magnitudes for those stars
 #Background sky level is calculated using random median sampling of square arrays
 #A specific inset of the data array is taken if desired
 #Pixel values are summed row-wise and column-wise (optionally binned) and background level is used to determine which rows and columns contain stars
@@ -18,22 +18,34 @@ from starphot import starphot
 from astropy.table import Table
 import matplotlib.pylab as plt
 
-
-#files = [line.rstrip() for line in open('files.txt')]
+#Define path to folder containing files to be run
+#All fits or fit files will be automatically included
+#Output files will also be placed into this folder
 path = '/Users/Andromeda/PycharmProjects/untitled/files'
+
+#Alternatively, run list of files in specified text file
+#In this case files will output to the location of the main script
+#files = [line.rstrip() for line in open('files.txt')]
+
+#Suppress or display plots of summed rows/columns with detection level (on or off)
+plotting = 'on'
+
+#Create list of files to run based on defined path, ignoring all files that are not fit or fits
 files = [f for f in os.listdir(path) if any([f.endswith('fit'), f.endswith('fits')]) if not f.startswith('.')]
+#Run for all files in list
 for i in files:
+    #Define names for output files based on names of original files
     (name, ext) = os.path.splitext(i)
     newname = path+'/'+name+'mag.txt'
     datname = path+'/'+name+'dat.txt'
+    #Open output files
     f = open(newname,'w')
     df = open(datname,'w')
-    #Open image file of choice:
-    #image = fits.open('C111221.0077.fits')
+    #Open fits file
     filepath = path+'/'+i
     image = fits.open(filepath)
 
-    #Retrieve data and exposure time from file:
+    #Retrieve data, exposure time, airmass, and filter from fits file:
     Data = image[0].data
     etime = image[0].header['EXP_TIME']
     print('Exposure time:',file = f)
@@ -47,7 +59,7 @@ for i in files:
 
     #Compute background sky level through random median sampling:
     #Inputs: data array, nxn size of random subarray to use for sampling, and number of desired sampling iterations
-    back = background(Data,5,5000)
+    back = background(Data,5,1000)
     print('Sky background level:',file = f)
     print(back,file = f)
 
@@ -58,8 +70,9 @@ for i in files:
     inset = Data[round(mid/2):3*round(mid/2),round(mid/2):3*round(mid/2)]
     #Custom inset for specific chip
     #inset = inset[0:1000,1000:2000]
-    #Print data inset
+    #Use entire data array as inset
     #inset = Data
+    #Print data inset size
     print('Shape of inset array:', file = f)
     print(np.shape(inset), file = f)
 
@@ -72,20 +85,18 @@ for i in files:
     # inset[:,1102] = 0
     # inset[:,2047] = 0
 
-    #Blanket removal of bad pixels
+    #Blanket removal of bad pixels above 45000 and 3*standard deviation below 0:
     inset[inset>45000] = 0
     std = np.std(inset)
     inset[inset<-3*std] = 0
 
     #Calculate sky background for specific inset:
     #Inputs: inset data array, nxn size of random subarray used for sampling, number of desired sampling iterations
-    insetback = background(inset,5,5000)
+    insetback = background(inset,5,1000)
     print('Inset background sky level:',file = f)
     print(insetback,file = f)
 
     #Compute summed row and column values for desired array by number of bins:
-    #Will also display plots of summed row and column values before program continues
-    #Figures must be closed for program to procede
     #Inputs: inset data array, number of bins desired
     rowsum, colsum = binsum(inset,1)
     #Print summed row and column values
@@ -95,7 +106,7 @@ for i in files:
 
     #Locate values in summed row and column vectors that are greater than desired sigma level above background:
     #Inputs: Data array, background level variable, desired sigma detection level, summed row vector, summed column vector
-    starrow, starcol, backsum, std, sigma = starlocate(inset,insetback,25,rowsum,colsum)
+    starrow, starcol, backsum, std, sigma = starlocate(inset,insetback,100,rowsum,colsum)
     print('Summed background value for one row/column:', file = f)
     print(backsum, file = f)
     print('Standard deviation of inset:',file = f)
@@ -105,7 +116,6 @@ for i in files:
     print('Indices of detected stars:', file = f)
     print(starrow, file = f)
     print(starcol, file = f)
-
 
     #Take indices of detected star pixels and divide into sublists by individual star:
     #Return sublists of star indices, number of stars, and median pixel of each star
@@ -146,6 +156,7 @@ for i in files:
     print('Magnitudes for each star:',file = f)
     print(mags,file = f)
 
+    #Output data table to file:
     n = len(mags)
     tname = [i]*n
     tfilter = [filter]*n
@@ -155,13 +166,17 @@ for i in files:
     y = [y for [x,y] in adjstarpoints]
     t = Table([tname, tfilter, tairmass, tetime, x, y, mags], names=('File Name','Filter','Airmass','Exposure Time','X', 'Y', 'Magnitude'))
     print(t,file = df )
-    #Plot summed row and column values
-    plt.plot(rowsum)
-    plt.title('Summed Rows')
-    plt.show()
-    plt.plot(colsum)
-    plt.title('Summed Columns')
-    plt.show()
+
+    #Plot summed row and column values with detection level marked:
+    if plotting == 'on':
+        plt.plot(rowsum)
+        plt.plot((0,len(rowsum)),(backsum+sigma*std,backsum+sigma*std))
+        plt.title('Summed Rows')
+        plt.show()
+        plt.plot(colsum)
+        plt.plot((0, len(colsum)), (backsum + sigma * std, backsum + sigma * std))
+        plt.title('Summed Columns')
+        plt.show()
 
 
 
