@@ -23,7 +23,7 @@ import matplotlib.pylab as plt
 #Output files will also be placed into this folder
 path = '/Users/Andromeda/PycharmProjects/untitled/files'
 
-#Alternatively, run list of files in specified text file
+#Alternatively, run list of files in a specified text file
 #In this case files will output to the location of the main script
 #files = [line.rstrip() for line in open('files.txt')]
 
