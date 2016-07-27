@@ -28,7 +28,7 @@ path = '/Users/Andromeda/PycharmProjects/untitled/files'
 #files = [line.rstrip() for line in open('files.txt')]
 
 #Suppress or display plots of summed rows/columns with detection level (on or off)
-plotting = 'on'
+plotting = 'off'
 
 #Create list of files to run based on defined path, ignoring all files that are not fit or fits
 files = [f for f in os.listdir(path) if any([f.endswith('fit'), f.endswith('fits')]) if not f.startswith('.')]
@@ -164,8 +164,9 @@ for i in files:
     tetime = [etime]*n
     x = [x for [x,y] in adjstarpoints]
     y = [y for [x,y] in adjstarpoints]
-    t = Table([tname, tfilter, tairmass, tetime, x, y, mags], names=('File Name','Filter','Airmass','Exposure Time','X', 'Y', 'Magnitude'))
-    print(t,file = df )
+    t = Table([tname, tfilter, tairmass, tetime, x, y, mags], names=('File_Name', 'Filter', 'Airmass', 'Exposure_Time', 'X', 'Y', 'Magnitude'))
+    print(t)
+    t.write(df,format='ascii')
 
     #Plot summed row and column values with detection level marked:
     if plotting == 'on':
