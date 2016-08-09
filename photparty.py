@@ -21,7 +21,7 @@ import matplotlib.pylab as plt
 #Define path to folder containing files to be run
 #All fits or fit files will be automatically included
 #Output files will also be placed into this folder
-path = '/Users/Andromeda/PycharmProjects/untitled/files'
+path = '/Users/Andromeda/PycharmProjects/untitled/files_BAD'
 
 #Alternatively, run list of files in a specified text file
 #In this case files will output to the location of the main script
@@ -165,7 +165,6 @@ for i in files:
     x = [x for [x,y] in adjstarpoints]
     y = [y for [x,y] in adjstarpoints]
     t = Table([tname, tfilter, tairmass, tetime, x, y, mags], names=('File_Name', 'Filter', 'Airmass', 'Exposure_Time', 'X', 'Y', 'Magnitude'))
-    print(t)
     t.write(df,format='ascii')
 
     #Plot summed row and column values with detection level marked:

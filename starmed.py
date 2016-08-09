@@ -18,7 +18,9 @@ def starmed(starrow,starcol,inset,mid):
     for i in range(1,len(starrow)):
         if starrow[i] == starrow[i-1] + 1:
             starr.append(starrow[i])
-        elif starrow[i] != starrow[i-1] + 1:
+        elif starrow[i] == starrow[i-1] + 2:
+            starr.append(starrow[i])
+        else:
             rowloc.append(starr)
             starr = []
             starr.append(starrow[i])
@@ -27,7 +29,9 @@ def starmed(starrow,starcol,inset,mid):
     for j in range(1,len(starcol)):
         if starcol[j] == starcol[j-1] + 1:
             starc.append(starcol[j])
-        elif starcol[j] != starcol[j-1] + 1:
+        elif starcol[j] == starcol[j-1] + 2:
+            starc.append(starcol[j])
+        else:
             colloc.append(starc)
             starc = []
             starc.append(starcol[j])
@@ -69,6 +73,36 @@ def starmed(starrow,starcol,inset,mid):
             pt.append(j)
             starpoints.append(pt)
         elif j-1 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j+2 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j-2 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j+3 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j-3 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j+4 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j-4 in colmed:
             pt = []
             pt.append(i)
             pt.append(j)
