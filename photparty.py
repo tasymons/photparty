@@ -18,6 +18,7 @@ from starphot import starphot
 from astropy.table import Table
 import matplotlib.pylab as plt
 
+
 #Define path to folder containing files to be run
 #All fits or fit files will be automatically included
 #Output files will also be placed into this folder
