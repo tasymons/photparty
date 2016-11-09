@@ -2,9 +2,8 @@
 #summing for each bin on each axis
 #By Teresa Symons 2016
 
-#Import math and plotting
+#Import math
 import numpy as np
-import matplotlib.pylab as plt
 
 def binsum(array,bins):
 
@@ -15,13 +14,5 @@ def binsum(array,bins):
     for j in range(0,binnum):
         rowsum.append(np.sum(array[j*bins:j*bins+bins,:]))
         colsum.append(np.sum(array[:,j * bins:j * bins + bins]))
-
-    #Plot summed row and column values
-    plt.plot(rowsum)
-    plt.title('Summed Rows')
-    plt.show()
-    plt.plot(colsum)
-    plt.title('Summed Columns')
-    plt.show()
 
     return rowsum, colsum
