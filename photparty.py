@@ -21,7 +21,7 @@ import matplotlib.pylab as plt
 #Define path to folder containing files to be run
 #All fits or fit files will be automatically included
 #Output files will also be placed into this folder
-path = '/Users/Andromeda/PycharmProjects/untitled/files_BAD'
+path = '/Users/Andromeda/PycharmProjects/untitled/files'
 
 #Alternatively, run list of files in a specified text file
 #In this case files will output to the location of the main script
@@ -56,6 +56,7 @@ for i in files:
     airmass = image[0].header['AIRMASS']
     print('Airmass:', file = f)
     print(airmass, file = f)
+
 
     #Compute background sky level through random median sampling:
     #Inputs: data array, nxn size of random subarray to use for sampling, and number of desired sampling iterations
@@ -106,7 +107,7 @@ for i in files:
 
     #Locate values in summed row and column vectors that are greater than desired sigma level above background:
     #Inputs: Data array, background level variable, desired sigma detection level, summed row vector, summed column vector
-    starrow, starcol, backsum, std, sigma = starlocate(inset,insetback,100,rowsum,colsum)
+    starrow, starcol, backsum, std, sigma = starlocate(inset,insetback,50,rowsum,colsum)
     print('Summed background value for one row/column:', file = f)
     print(backsum, file = f)
     print('Standard deviation of inset:',file = f)
@@ -171,11 +172,15 @@ for i in files:
     if plotting == 'on':
         plt.plot(rowsum)
         plt.plot((0,len(rowsum)),(backsum+sigma*std,backsum+sigma*std))
-        plt.title('Summed Rows')
+        plt.title('Summed Rows'+'-'+name)
+        plt.xlabel('Row Index in Data Inset')
+        plt.ylabel('Summed Row Value')
         plt.show()
         plt.plot(colsum)
         plt.plot((0, len(colsum)), (backsum + sigma * std, backsum + sigma * std))
-        plt.title('Summed Columns')
+        plt.title('Summed Columns'+'-'+name)
+        plt.xlabel('Column Index in Data Inset')
+        plt.ylabel('Summed Column Value')
         plt.show()
 
 
