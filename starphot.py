@@ -4,7 +4,7 @@
 # and this is then converted into a magnitude for each star
 #By Teresa Symons 2016
 
-def starphot(hw,inset,starpoints, etime):
+def starphot(hw,inset,starpoints,etime,gain):
     #Import math and array index adjustment
     import numpy as np
     from fixindex import fixindex
@@ -60,10 +60,13 @@ def starphot(hw,inset,starpoints, etime):
     #Subtract the background value from each star
     backsub = [a-b for a, b in zip(boxsum,starback)]
 
+    #Calculate mag errors
+    magerr = [1/np.sqrt(gain*x) for x in backsub]
+
     #Convert to flux by dividing by exposure time
     flux = [x/etime for x in backsub]
 
     #Convert to magnitude
     mags = [-2.5*np.log10(a)+20 for a in flux]
 
-    return boxsum, starback, backsub,flux, mags, hw
+    return boxsum, starback, backsub,flux, mags, hw, magerr

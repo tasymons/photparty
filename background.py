@@ -5,6 +5,7 @@
 import numpy as np
 from random import randint
 from fixindex import fixindex
+from scipy import stats
 
 def background(input, length, n):
 
@@ -29,11 +30,16 @@ def background(input, length, n):
     for i in range(0,n):
         small = subarray(input,length)
         m = np.nanmedian(small)
+        #m = stats.mode(small,axis=None)
+        #m = float(m[0])
         skyvals.append(m)
 
     #Median of all sky values is taken as background level
     back = np.nanmedian(skyvals)
+    #back = stats.mode(skyvals,axis=None)
+    #back = float(back[0])
 
-    return back
+
+    return back, skyvals
 
 
