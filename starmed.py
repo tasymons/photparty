@@ -107,6 +107,16 @@ def starmed(starrow,starcol,inset,mid):
             pt.append(i)
             pt.append(j)
             starpoints.append(pt)
+        elif j+5 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
+        elif j-5 in colmed:
+            pt = []
+            pt.append(i)
+            pt.append(j)
+            starpoints.append(pt)
 
     #Adjust coordinates for original image and python indexing
     adjstarpoints = [[y+round(mid/2)+1,x+round(mid/2)+1] for [x,y] in starpoints]

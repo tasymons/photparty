@@ -4,7 +4,7 @@
 # and this is then converted into a magnitude for each star
 #By Teresa Symons 2016
 
-def starphot(hw,inset,starpoints,etime,gain):
+def starphot(hw,inset,starpoints,etime,gain, name):
     #Import math and array index adjustment
     import numpy as np
     from fixindex import fixindex
@@ -54,11 +54,15 @@ def starphot(hw,inset,starpoints,etime,gain):
         medsum.append(medboxlr)
 
         #Declare the background for a given star to be the median of the 4 median boxes
-        starback.append(np.nanmedian(medsum))
+        starback.append(((2*hw)*(2*hw))*(np.nanmedian(medsum)))
         boxsum.append(np.sum(box))
 
     #Subtract the background value from each star
     backsub = [a-b for a, b in zip(boxsum,starback)]
+
+    #Error message for stars with negative values after background subtraction
+    if any(x<0 for x in backsub):
+        print('Error: '+name+' contains a star with negative background-subtracted value - no magnitude calculated.')
 
     #Calculate mag errors
     magerr = [1/np.sqrt(gain*x) for x in backsub]

@@ -11,7 +11,7 @@
 #Define path to folder containing files to be run
 #All fits or fit files will be automatically included
 #Output files will also be placed into this folder
-path = '/Users/Andromeda/PycharmProjects/OCT11standards'
+path = '/Users/Andromeda/PycharmProjects/files'
 
 #Header key words/values:
 #If no keyword exists, enter 'NONE' and define value instead
@@ -26,7 +26,7 @@ airmasskword = 'AIRMASS'
 airmass = 100
 #Gain
 gainkword = 'NONE'
-gain = 2.14
+gain = 1
 
 #Parameters for background sampling:
 #Width/length in pixels of box for random background sampling to determine background value
@@ -44,7 +44,10 @@ framearea = 'half'
 sig = 50
 
 #Suppress or display plots of summed rows/columns with detection level marked (on or off)
-plotting = 'off'
+plotdetect = 'on'
+
+#Suppress or display plots of fits image with detected star apertures overlaid (on or off)
+plotstars = 'on'
 
 #Square-aperture size:
 #Select the half-width of the box used for photometry
@@ -62,6 +65,7 @@ from starlocate import starlocate
 from starmed import starmed
 from starphot import starphot
 from astropy.table import Table
+import matplotlib.patches as patches
 import matplotlib.pylab as plt
 
 #Create list of files to run based on defined path, ignoring all files that are not fit or fits
@@ -145,7 +149,7 @@ for i in files:
     #Also find background values for each star and subtract them from star values
     #Convert background-subtracted star values into fluxes and then magnitudes
     #Inputs: half-width of nxn square aperture, inset data array, vector containing star coordinates, exposure time
-    boxsum, starback, backsub, flux, mags, hw, magerr = starphot(boxhw, inset, starpoints, etime, gain)
+    boxsum, starback, backsub, flux, mags, hw, magerr = starphot(boxhw, inset, starpoints, etime, gain, name)
 
     #Output data table to file:
     n = len(mags)
@@ -159,7 +163,7 @@ for i in files:
     t.write(df,format='ascii')
 
     #Plot summed row and column values with detection level marked:
-    if plotting == 'on':
+    if plotdetect == 'on':
         plt.plot(rowsum)
         plt.plot((0,len(rowsum)),(backsum+sigma*std,backsum+sigma*std))
         plt.title('Summed Rows'+'-'+name)
@@ -171,6 +175,16 @@ for i in files:
         plt.title('Summed Columns'+'-'+name)
         plt.xlabel('Column Index in Data Inset')
         plt.ylabel('Summed Column Value')
+        plt.show()
+
+    #Plot fits image with square apertures for detected stars overlaid
+    if plotstars == 'on':
+        fig, ax = plt.subplots(1)
+        ax.imshow(Data, cmap='Greys',vmin=0,vmax=10)
+        for i in range(0,len(x)):
+            rect = patches.Rectangle(((x[i]-hw),(y[i]-hw)), 2*hw, 2*hw, linewidth=1, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+        plt.title(name)
         plt.show()
 
     #Printing of values to check program function to file
