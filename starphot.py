@@ -47,7 +47,6 @@ def starphot(hw,inset,starpoints,etime,gain, name):
         medboxll = np.nanmedian(ll)
         medboxlr = np.nanmedian(lr)
 
-
         #Sum up the values in the star box and take the median of all the background boxes
         medsum.append(medboxul)
         medsum.append(medboxur)
