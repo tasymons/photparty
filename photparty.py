@@ -37,11 +37,16 @@ backnum = 1000
 #Selection of area of each frame to analyze:
 #If area of interest is in the central 50% of frame, select 'half'
 #If area of interest is entire frame, select 'whole'
-framearea = 'half'
+#If custom area of interest is desired, select 'custom' and define range of X and Y coordinates with (1,1) as the bottom left corner of the frame
+framearea = 'custom'
+xlow = 900
+xhigh = 1500
+ylow = 1200
+yhigh = 1750
 
 #Detection level:
 #Select number of standard deviations above background required for star detection
-sig = 50
+sig = 25
 
 #Suppress or display plots of summed rows/columns with detection level marked (on or off)
 plotdetect = 'on'
@@ -117,9 +122,20 @@ for i in files:
         mid = len(Data)/2
         #Take an inset of data that is half of area
         inset = Data[round(mid/2):3*round(mid/2),round(mid/2):3*round(mid/2)]
+        xlow = 0
+        xhigh = 0
+        ylow = 0
+        yhigh = 0
     if framearea == 'whole':
         #Use entire data array as inset
         inset = Data
+        mid = 0
+        xlow = 0
+        xhigh = 0
+        ylow = 0
+        yhigh = 0
+    if framearea == 'custom':
+        inset = Data[ylow-1:yhigh-1,xlow-1:xhigh-1]
         mid = 0
 
     #Blanket removal of bad pixels above 45000 and 3*standard deviation below 0:
@@ -138,12 +154,31 @@ for i in files:
     #Locate values in summed row and column vectors that are greater than desired sigma level above background:
     #Inputs: Data array, background level variable, desired sigma detection level, summed row vector, summed column vector
     starrow, starcol, backsum, std, sigma = starlocate(inset,insetback,sig,rowsum,colsum)
+    if starrow == []:
+        print('Error: No stars found in '+name+' by row - check threshold.')
+    if starcol == []:
+        print('Error: No stars found in '+name+' by column - check threshold.')
+
+    # Plot summed row and column values with detection level marked:
+    if plotdetect == 'on':
+        plt.plot(rowsum)
+        plt.plot((0, len(rowsum)), (backsum + sigma * std, backsum + sigma * std))
+        plt.title('Summed Rows' + '-' + name)
+        plt.xlabel('Row Index in Data Inset')
+        plt.ylabel('Summed Row Value')
+        plt.show()
+        plt.plot(colsum)
+        plt.plot((0, len(colsum)), (backsum + sigma * std, backsum + sigma * std))
+        plt.title('Summed Columns' + '-' + name)
+        plt.xlabel('Column Index in Data Inset')
+        plt.ylabel('Summed Column Value')
+        plt.show()
 
     #Take indices of detected star pixels and divide into sublists by individual star:
     #Return sublists of star indices, number of stars, and median pixel of each star
     #Pair star center row with star center column and return total number of pairs found
     #Inputs: vectors containing indices of detected star pixels for row and column and inset data array
-    rowloc, colloc, numstarr, numstarc, rowmed, colmed, starpoints, adjstarpoints = starmed(starrow,starcol,inset,mid)
+    rowloc, colloc, numstarr, numstarc, rowmed, colmed, starpoints, adjstarpoints = starmed(starrow,starcol,inset,mid,xlow,ylow)
 
     #Take list of star coordinates and find summed pixel values within a square aperture of desired size:
     #Also find background values for each star and subtract them from star values
@@ -162,30 +197,19 @@ for i in files:
     t = Table([tname, tfilter, tairmass, tetime, x, y, mags, magerr], names=('File_Name', 'Filter', 'Airmass', 'Exposure_Time', 'X', 'Y', 'Magnitude', 'Mag_Err'))
     t.write(df,format='ascii')
 
-    #Plot summed row and column values with detection level marked:
-    if plotdetect == 'on':
-        plt.plot(rowsum)
-        plt.plot((0,len(rowsum)),(backsum+sigma*std,backsum+sigma*std))
-        plt.title('Summed Rows'+'-'+name)
-        plt.xlabel('Row Index in Data Inset')
-        plt.ylabel('Summed Row Value')
-        plt.show()
-        plt.plot(colsum)
-        plt.plot((0, len(colsum)), (backsum + sigma * std, backsum + sigma * std))
-        plt.title('Summed Columns'+'-'+name)
-        plt.xlabel('Column Index in Data Inset')
-        plt.ylabel('Summed Column Value')
-        plt.show()
-
     #Plot fits image with square apertures for detected stars overlaid
     if plotstars == 'on':
         fig, ax = plt.subplots(1)
         ax.imshow(Data, cmap='Greys',vmin=0,vmax=10)
         for i in range(0,len(x)):
-            rect = patches.Rectangle(((x[i]-hw),(y[i]-hw)), 2*hw, 2*hw, linewidth=1, edgecolor='r', facecolor='none')
+            rect = patches.Rectangle(((x[i]-1-hw),(y[i]-1-hw)), 2*hw, 2*hw, linewidth=1, edgecolor='r', facecolor='none')
+            ax.add_patch(rect)
+        if framearea == 'custom':
+            rect = patches.Rectangle((xlow-1,ylow-1), xhigh-xlow, yhigh-ylow, linewidth=1, edgecolor='b', facecolor='none')
             ax.add_patch(rect)
         plt.title(name)
         plt.show()
+
 
     #Printing of values to check program function to file
     print('Exposure time:', file=f)

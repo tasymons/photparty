@@ -2,7 +2,7 @@
 #It also returns the number of stars by row and by column, the median pixel values for each star, and paired coordinates for each star
 #By Teresa Symons 2016
 
-def starmed(starrow,starcol,inset,mid):
+def starmed(starrow,starcol,inset,mid,xlow,ylow):
     #Import math
     import numpy as np
 
@@ -119,6 +119,6 @@ def starmed(starrow,starcol,inset,mid):
             starpoints.append(pt)
 
     #Adjust coordinates for original image and python indexing
-    adjstarpoints = [[y+round(mid/2)+1,x+round(mid/2)+1] for [x,y] in starpoints]
+    adjstarpoints = [[xlow+y+round(mid/2)+1,ylow+x+round(mid/2)+1] for [x,y] in starpoints]
 
     return rowloc, colloc, numstarr, numstarc, rowmed, colmed, starpoints, adjstarpoints
