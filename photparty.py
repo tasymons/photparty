@@ -44,6 +44,13 @@ xhigh = 1500
 ylow = 1200
 yhigh = 1750
 
+#Pixel rejection:
+#Select pixel value above which values will be zeroed out
+uplim = 45000
+#Select number of sigma below which negative pixel values will be zeroed out
+#Example: lowsig = 3 means pixel values less than -3*inset standard deviation will become 0
+lowsig = 3
+
 #Detection level:
 #Select number of standard deviations above background required for star detection
 sig = 25
@@ -84,7 +91,7 @@ files = [f for f in os.listdir(path) if any([f.endswith('fit'), f.endswith('fits
 for i in files:
     #Define names for output files based on names of original files
     (name, ext) = os.path.splitext(i)
-    newname = path+'/'+name+'mag.txt'
+    newname = path+'/'+name+'info.txt'
     datname = path+'/'+name+'dat.txt'
     #Open output files
     f = open(newname,'w')
@@ -139,9 +146,9 @@ for i in files:
         mid = 0
 
     #Blanket removal of bad pixels above 45000 and 3*standard deviation below 0:
-    inset[inset>45000] = 0
+    inset[inset>uplim] = 0
     std = np.std(inset)
-    inset[inset<-3*std] = 0
+    inset[inset<-lowsig*std] = 0
 
     #Calculate sky background for specific inset:
     #Inputs: inset data array, nxn size of random subarray used for sampling, number of desired sampling iterations
