@@ -65,7 +65,7 @@ def starphot(hw,inset,starpoints,etime,gain, name):
         print('Error: '+name+' contains a star with negative background-subtracted value - no magnitude calculated.')
 
     #Calculate mag errors
-    magerr = [1/np.sqrt(gain*x) for x in backsub]
+    magerr = [1/np.sqrt(x) for x in backsub]
 
     #Convert to flux by dividing by exposure time
     flux = [x/etime for x in backsub]
